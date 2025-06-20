@@ -1,117 +1,238 @@
+/* ==================== */
+/* TABLE STYLES         */
+/* ==================== */
 #show-good-table {
-	width: 100%;
-	border-collapse: collapse;
-	font-size: 14px;
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: 14px;
 }
 
 #show-good-table thead {
-	background-color: var(--primary);
-	color: white;
-	position: sticky;
-	top: 0;
-	box-shadow: var(--shadow);
+  background-color: var(--primary);
+  color: white;
+  position: sticky;
+  top: 0;
+  box-shadow: var(--shadow);
 }
 
 #show-good-table th {
-	padding: 10px 12px;
-	text-align: left;
-	font-weight: 600;
-}
-
-#show-good-table tbody tr {
-	transition: background 0.2s;
-}
-
-#show-good-table tbody tr:hover {
-	background-color: var(--hover-bg);
+  position: relative;
+  padding: 10px 12px;
+  text-align: left;
+  font-weight: 600;
+  user-select: none;
 }
 
 #show-good-table td {
-	padding: 10px 12px;
-	border-bottom: 1px solid var(--border);
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
+#show-good-table tbody tr {
+  transition: background 0.2s;
+}
+
+#show-good-table tbody tr:hover {
+  background-color: var(--hover-bg);
+}
+
+.selected-row {
+  background-color: rgba(0, 120, 215, 0.3) !important;
+}
+
+.sort-indicator {
+  margin-left: 5px;
+}
+
+/* Column resizer */
+.resizer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 5px;
+  height: 100%;
+  background: var(--border);
+  cursor: col-resize;
+  z-index: 1;
+}
+
+.resizer:hover,
+.resizer.active {
+  background: var(--primary);
+}
+
+/* ==================== */
+/* FORM STYLES          */
+/* ==================== */
 #create-good-form {
-	padding: 12px;
+  padding: 12px;
 }
 
 #create-good-form table {
-	width: 100%;
-	border-collapse: collapse;
+  width: 100%;
+  border-collapse: collapse;
 }
 
 #create-good-form tr:not(:last-child) td {
-	padding-bottom: 8px;
+  padding-bottom: 8px;
 }
 
 #create-good-form td {
-	padding: 0 8px;
-	vertical-align: top;
-	width: 50%;
+  padding: 0 8px;
+  vertical-align: top;
+  width: 50%;
 }
 
 #create-good-form td[colspan="2"] {
-	width: 100%;
-	padding-top: 8px;
+  width: 100%;
+  padding-top: 8px;
 }
 
 #create-good-form label {
-	display: block;
-	font-size: 12px;
-	font-weight: 600;
-	color: var(--text);
-	margin-bottom: 2px;
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 2px;
 }
 
 #create-good-form input[type="text"],
 #create-good-form select {
-	width: 100%;
-	padding: 6px 8px;
-	border: 1px solid var(--border);
-	border-radius: var(--radius);
-	font-size: 12px;
-	height: 28px;
+  width: 100%;
+  padding: 6px 8px;
+  height: 28px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 12px;
 }
 
 #create-good-form input[type="text"]:focus,
 #create-good-form select:focus {
-	outline: none;
-	border-color: var(--primary-light);
-	box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.25);
+  outline: none;
+  border-color: var(--primary-light);
+  box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.25);
+}
+
+/* ==================== */
+/* CHECKBOX STYLES      */
+/* ==================== */
+.checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
 }
 
 #create-good-form .checkbox-wrapper {
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	margin-top: 24px;
+  gap: 8px;
+  margin-top: 24px;
 }
 
-#create-good-form input[type="checkbox"] {
-	width: 16px;
-	height: 16px;
-	margin: 0;
+input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+}
+
+/* ==================== */
+/* BUTTON STYLES        */
+/* ==================== */
+button {
+  padding: 6px 16px;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 8px;
+  color: white;
+  background-color: var(--primary);
 }
 
 #create-good-form button {
-	background-color: var(--primary);
-	color: white;
-	border: none;
-	padding: 6px 16px;
-	border-radius: var(--radius);
-	cursor: pointer;
-	font-size: 12px;
-	font-weight: 600;
-	transition: all 0.2s;
-	text-transform: uppercase;
-	letter-spacing: 0.5px;
-	margin-top: 8px;
+  margin-top: 8px;
 }
 
-#create-good-form button:hover {
-	background-color: var(--primary-dark);
-	transform: translateY(-1px);
+button:hover {
+  background-color: var(--primary-dark);
+  transform: translateY(-1px);
+}
+
+button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+#delete-btn {
+  background-color: #ff6b6b;
+}
+
+/* ==================== */
+/* STATUS INDICATORS    */
+/* ==================== */
+.status-indicator {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.status-active {
+  background-color: #4CAF50;
+}
+
+.status-inactive {
+  background-color: #ff6b6b;
+}
+/* Додаткові стилі для стрілочки сортування */
+.sort-indicator {
+  margin-left: 8px;
+  float: right;
+}
+
+#show-good-table th .resizer {
+  right: -3px; /* Зміщення для кращого UX */
+}
+
+#show-good-table th .sort-indicator {
+  position: absolute;
+  right: 12px; /* Відступ від правого краю */
+}
+
+/* Стилі для стрілочки сортування */
+.sort-indicator {
+  position: absolute;
+  right: 20px; /* Відступ від правого краю колонки */
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* Стилі для ресайзера */
+.resizer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 10px; /* Ширина області для ресайзу */
+  height: 100%;
+  cursor: col-resize;
+  z-index: 1;
+}
+
+.resizer:hover {
+  background-color: var(--primary-light);
+}
+
+/* Заголовки колонок */
+#show-good-table th {
+  position: relative;
+  padding-right: 30px; /* Місце для стрілочки та ресайзера */
+  min-width: 100px; /* Мінімальна ширина колонки */
+  white-space: nowrap;
 }
