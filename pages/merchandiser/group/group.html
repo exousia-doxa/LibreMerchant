@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="./static/merchandiser/group/group.css" />
+    <link rel="stylesheet" href="./static/merchandiser/merchandiser.css" />
+  </head>
+  <body>
+    <div class="form-container">
+      <div id="form-block" class="resizable-block">
+        <form id="create-group-form">
+          <table>
+            <tr>
+              <td><label for="name">Group Name:</label></td>
+              <td>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  maxlength="255"
+                  required
+                />
+              </td>
+            </tr>
+            <tr>
+              <td><label for="type">Type:</label></td>
+              <td>
+                <select id="type" name="type" required>
+                  <option value="1">Organisation (Owner)</option>
+                  <option value="2">Organisation (Supplier)</option>
+                  <option value="3">Good</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td><label for="supergroup">Supegroup:</label></td>
+              <td>
+                <select id="supergroup" name="supergroup" required></select>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2" style="text-align: right">
+                <button type="submit">Submit</button>
+              </td>
+            </tr>
+          </table>
+        </form>
+      </div>
+
+      <div class="resize-handle"></div>
+
+      <div id="table-block" class="resizable-block">
+        <table id="show-group-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Supergroup</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </body>
+</html>

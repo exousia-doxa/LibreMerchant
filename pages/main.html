@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Main Page</title>
+    <style>
+        .main-container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .mode-button {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            font-size: 16px;
+            border: none;
+            border-radius: 12px;
+            background-color: #28a745;
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .mode-button:hover {
+            background-color: #28a745;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <h1>Welcome back!</h1>
+        <button class="mode-button" onclick="location.href='kiosk.html'">Kiosk Mode</button>
+        <button class="mode-button" onclick="location.href='merchandiser.html'">Merchandiser Mode</button>
+        <button class="mode-button" onclick="location.href='settings.html#about'">Settings</button>
+    </div>
+</body>
+</html>

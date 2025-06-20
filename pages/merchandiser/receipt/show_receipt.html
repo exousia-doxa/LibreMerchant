@@ -1,0 +1,101 @@
+<table id="show-receipt-table">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Timestamp</th>
+      <th>Type</th>
+      <th>Credentials</th>
+      <th>Supplier</th>
+      <th>Owner</th>
+      <th>Receipt</th>
+    </tr>
+  </thead>
+  <tbody>
+  </tbody>
+</table>
+
+<!-- Add this new table for showing receipt items -->
+<table id="show-item-table" style="display: none;">
+  <thead>
+    <tr>
+      <th>Good</th>
+      <th>Amount</th>
+      <th>Cost</th>
+      <th>Price</th>
+      <th>Excise</th>
+      <th>Receipt</th>
+    </tr>
+  </thead>
+  <tbody id="show-item-body">
+  </tbody>
+</table>
+<button id="back-button" style="display: none;" onclick="hideItems()">Back to Receipts</button>
+
+<script>
+window.addEventListener('content-displayed', function(e) {
+  if (e.detail === 'show-receipt') {
+    fetch('/show_receipt')
+      .then(res => res.json())
+      .then(json => {
+        if (!json.success) return;
+        const tbody = document.querySelector('#show-receipt-table tbody');
+        tbody.innerHTML = '';
+        json.data.forEach(receipt => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td><a href="javascript:void(0)" onclick="showItems(${receipt.id})">${receipt.id}</a></td>
+            <td>${receipt.timestamp}</td>
+            <td>${receipt.type}</td>
+            <td>${receipt.credentials}</td>
+            <td>${receipt.supplier}</td>
+            <td>${receipt.owner}</td>
+            <td>${receipt.receipt}</td>
+          `;
+          tbody.appendChild(row);
+        });
+      })
+      .catch(err => console.error('Error:', err));
+  }
+});
+
+function showItems(receiptId) {
+  // Hide the receipts table
+  document.getElementById('show-receipt-table').style.display = 'none';
+
+  // Show the items table and back button
+  document.getElementById('show-item-table').style.display = 'table';
+  document.getElementById('back-button').style.display = 'block';
+
+  // Fetch items for this receipt
+  fetch(`/show_item?id=${receiptId}`)
+    .then(res => res.json())
+    .then(json => {
+      if (!json.success) return;
+      const tbody = document.getElementById('show-item-body');
+      tbody.innerHTML = '';
+
+      json.data.forEach(item => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${item.good}</td>
+          <td>${item.amount}</td>
+          <td>${item.cost}</td>
+          <td>${item.price}</td>
+          <td>${item.excise}</td>
+          <td>${item.receipt}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    })
+    .catch(err => console.error('Error:', err));
+}
+
+function hideItems() {
+  // Show the receipts table
+  document.getElementById('show-receipt-table').style.display = 'table';
+
+  // Hide the items table and back button
+  document.getElementById('show-item-table').style.display = 'none';
+  document.getElementById('back-button').style.display = 'none';
+}
+</script>

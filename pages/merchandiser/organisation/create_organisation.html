@@ -1,0 +1,91 @@
+<form id="create-organisation-form">
+  <table>
+    <tr>
+      <td><label for="name">Organisation Name:</label></td>
+      <td><input type="text" id="name" name="name" maxlength="255" required></td>
+    </tr>
+    <tr>
+      <td><label for="type">Type:</label></td>
+      <td><select id="type" name="type" required>
+        <option value="1">Owner</option>
+        <option value="2">Supplier</option>
+      </select></td>
+    </tr>
+    <tr>
+      <td><label for="vat">VAT:</label></td>
+      <td><input type="checkbox" id="vat" name="vat"></td>
+    </tr>
+    <tr>
+      <td><label for="group_id">Group:</label></td>
+      <td><select id="group_id" name="group_id" required></select></td>
+    </tr>
+    <tr>
+      <td colspan="2" style="text-align:right;">
+        <button type="submit">Submit</button>
+      </td>
+    </tr>
+  </table>
+</form>
+
+<script>
+window.addEventListener('content-displayed', function(e) {
+    if (e.detail === 'create-organisation') {
+        fetch('/get_create_organisation_data')
+            .then(response => response.json())
+            .then(data => {
+                const populateSelect = (selectId, items) => {
+                    const select = document.getElementById(selectId);
+                    select.innerHTML = '';
+                    if (items.group_id) {
+                        for (const [value, name] of Object.entries(items.group_id)) {
+                            const option = document.createElement('option');
+                            option.value = value;
+                            option.textContent = name + " (" + (value - 1) + ")";
+                            select.appendChild(option);
+                        }
+                    }
+                };
+
+                if (data.group_id) populateSelect('group_id', data);
+            })
+            .catch(error => console.error('Error loading group data:', error));
+
+        const form = document.getElementById('create-organisation-form');
+        form.replaceWith(form.cloneNode(true));
+        const freshForm = document.getElementById('create-organisation-form');
+
+        freshForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            const formData = new FormData(freshForm);
+            const data = {
+                name: formData.get('name'),
+                type: formData.get('type'),
+                vat: formData.get('vat') === 'on',
+                group_id: formData.get('group_id')
+            };
+
+            fetch('/create_organisation', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Organisation created successfully!');
+                    freshForm.reset();
+                } else {
+                    alert('Error creating organisation: ' + (data.message || ''));
+                }
+            })
+            .catch(error => {
+                console.error('Error submitting form:', error);
+                alert('Network error occurred. Please try again.');
+            });
+        });
+    }
+});
+</script>

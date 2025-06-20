@@ -1,0 +1,92 @@
+<form id="create-group-form">
+  <table>
+    <tr>
+      <td><label for="name">Group Name:</label></td>
+      <td><input type="text" id="name" name="name" maxlength="255" required></td>
+    </tr>
+    <tr>
+      <td><label for="type">Type:</label></td>
+      <td><select id="type" name="type" required>
+        <option value="1">Organisation (Owner)</option>
+        <option value="2">Organisation (Supplier)</option>
+        <option value="3">Good</option>
+      </select></td>
+    </tr>
+    <tr>
+      <td><label for="supergroup">Supegroup:</label></td>
+      <td><select id="supergroup" name="supergroup" required></select></td>
+    </tr>
+    <tr>
+      <td colspan="2" style="text-align:right;">
+        <button type="submit">Submit</button>
+      </td>
+    </tr>
+  </table>
+</form>
+
+<script>
+window.addEventListener('content-displayed', function(e) {
+    if (e.detail === 'create-group') {
+        // Fetch the data to populate the select lists
+        fetch('/get_create_group_data')
+            .then(response => response.json())
+            .then(data => {
+                const populateSelect = (selectId, items) => {
+                    const select = document.getElementById(selectId);
+                    select.innerHTML = ''; // Clear existing options
+
+                    // Handle the new format where items is an object with group_id
+                    if (items.group_id) {
+                        for (const [value, name] of Object.entries(items.group_id)) {
+                            const option = document.createElement('option');
+                            option.value = value;
+                            option.textContent = name + " (" + (value - 1) + ")"; // Use the new function to format the name
+                            select.appendChild(option);
+                        }
+                    }
+                };
+
+                if (data.group_id) populateSelect('supergroup', data); // pass the entire data object
+            })
+            .catch(error => console.error('Error loading group data:', error));
+
+        // Handle form submission
+        const form = document.getElementById('create-group-form');
+        // Remove any existing listeners to prevent duplicates
+        form.replaceWith(form.cloneNode(true));
+        const freshForm = document.getElementById('create-group-form');
+
+        freshForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            const formData = new FormData(freshForm);
+            const data = {
+                name: formData.get('name'),
+                type: formData.get('type'),
+                supergroup: formData.get('supergroup')
+            };
+
+            fetch('/create_group', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Group created successfully!');
+                    freshForm.reset(); // Clear the form after successful submission
+                } else {
+                    alert('Error creating product: ' + (data.message || ''));
+                }
+            })
+            .catch(error => {
+                console.error('Error submitting form:', error);
+                alert('Network error occurred. Please try again.');
+            });
+        });
+    }
+});
+</script>

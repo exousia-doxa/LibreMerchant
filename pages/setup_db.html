@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setup Database</title>
+    <style>
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    background: #fff;
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 400px;
+    text-align: center;
+}
+
+h2 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.form-group {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+input[type="text"],
+input[type="password"],
+select {
+    width: 100%;
+    padding: 6px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+input[type="submit"],
+button.btn {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    background: #28a745;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+input[type="submit"]:hover,
+button.btn:hover {
+    background: #218838;
+}
+
+/* Dropdown menu styles */
+select {
+    appearance: none;
+    background: #fff url('../static/dropdown-arrow.png') no-repeat right 10px center;
+    background-size: 12px;
+    padding-right: 30px;
+}
+
+select:focus {
+    border-color: #28a745;
+    outline: none;
+}
+
+button.btn + button.btn {
+    margin-top: 10px;
+}
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <button onclick="window.location.href='/auth.html'" class="btn">Return</button>
+
+    <h2>Setup Database</h2>
+
+    <div class="form-group">
+        <label for="db-select">Select Database</label>
+        <select id="db-select" name="db-select">
+            <option value="">Select a database</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="db-name">Database Name</label>
+        <input type="text" id="db-name" name="db-name">
+    </div>
+    <div class="form-group">
+        <label for="db-url">Database URL</label>
+        <input type="text" id="db-url" name="db-url">
+    </div>
+    <div class="form-group">
+        <label for="db-login">Database Login</label>
+        <input type="text" id="db-login" name="db-login">
+    </div>
+    <div class="form-group">
+        <label for="db-password">Database Password</label>
+        <input type="password" id="db-password" name="db-password">
+    </div>
+
+    <button type="button" id="save-db-btn" class="btn">Save</button>
+    <button type="button" id="delete-db-btn" class="btn">Delete</button>
+</div>
+
+</body>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        if (document.getElementById("db-select")) {
+            loadDatabases();
+
+            document.getElementById("db-select").addEventListener("change", function(event) {
+                const selectedDb = event.target.value;
+                if (selectedDb) {
+                    const databases = getDatabasesFromCookies();
+                    const db = databases.find(db => db.name === selectedDb);
+                    if (db) {
+                        document.getElementById("db-name").value = db.name;
+                        document.getElementById("db-url").value = db.url;
+                        document.getElementById("db-login").value = db.login;
+                        document.getElementById("db-password").value = db.password;
+                    }
+                } else {
+                    clearFields();
+                }
+            });
+
+            document.getElementById("save-db-btn").addEventListener("click", function() {
+                const name = document.getElementById("db-name").value;
+                const url = document.getElementById("db-url").value;
+                const login = document.getElementById("db-login").value;
+                const password = document.getElementById("db-password").value;
+
+                // Збереження у cookie
+                const newDb = { name, url, login, password };
+                let databases = getDatabasesFromCookies();
+                const selectedDbName = document.getElementById("db-select").value;
+                if (selectedDbName) {
+                    databases = databases.filter(db => db.name !== selectedDbName);
+                }
+                databases.push(newDb);
+                document.cookie = `databases=${encodeURIComponent(JSON.stringify(databases))}; path=/`;
+
+                // Відправлення POST-запиту
+                fetch('/save_db_config', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newDb)
+                }).then(response => {
+                    if (response.ok) {
+                        window.location.href = "/auth.html";
+                    } else {
+                        alert("Failed to save database configuration");
+                    }
+                });
+            });
+
+            document.getElementById("delete-db-btn").addEventListener("click", function() {
+                const dbSelect = document.getElementById("db-select");
+                const dbNameToDelete = dbSelect.value;
+
+                let databases = getDatabasesFromCookies();
+                databases = databases.filter(db => db.name !== dbNameToDelete);
+                document.cookie = `databases=${encodeURIComponent(JSON.stringify(databases))}; path=/`;
+
+                const optionToDelete = Array.from(dbSelect.options).find(option => option.value === dbNameToDelete);
+                if (optionToDelete) {
+                    optionToDelete.remove();
+                }
+
+                clearFields();
+            });
+        }
+    });
+
+    function loadDatabases() {
+        const dbSelect = document.getElementById("db-select");
+        dbSelect.innerHTML = ''; // Clear existing options
+
+        // Add the "Select a database" option
+        const defaultOption = document.createElement("option");
+        defaultOption.value = "";
+        defaultOption.textContent = "Select a database";
+        dbSelect.appendChild(defaultOption);
+
+        const databases = getDatabasesFromCookies();
+        databases.forEach(db => {
+            const option = document.createElement("option");
+            option.value = db.name;
+            option.textContent = db.name;
+            dbSelect.appendChild(option);
+        });
+
+        // Add the "Setup Database" option at the end
+        const setupOption = document.createElement("option");
+        setupOption.value = "setup-db";
+        setupOption.textContent = "Setup Database";
+        dbSelect.appendChild(setupOption);
+
+        // Set the default selected option
+        dbSelect.value = "";
+    }
+
+    function getDatabasesFromCookies() {
+        const cookies = document.cookie.split("; ");
+        const dbCookie = cookies.find(cookie => cookie.startsWith("databases="));
+        if (dbCookie) {
+            return JSON.parse(decodeURIComponent(dbCookie.split("=")[1]));
+        }
+        return [];
+    }
+
+    function clearFields() {
+        document.getElementById("db-name").value = "";
+        document.getElementById("db-url").value = "";
+        document.getElementById("db-login").value = "";
+        document.getElementById("db-password").value = "";
+        document.getElementById("db-select").value = "";
+    }
+</script>
+
+</html>

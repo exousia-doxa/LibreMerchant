@@ -1,0 +1,35 @@
+services:
+  webserver:
+    image: python:3
+    container_name: Test_Webserver
+    ports:
+      - "8000:8000"
+    volumes:
+      - /home/docker:/app
+    depends_on:
+      - database
+    working_dir: /app
+    command: >
+      sh -c "pip install --no-cache-dir -r requirements.txt &&
+             uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
+    networks:
+      - mynetwork
+
+  database:
+    image: mysql:8.0
+    container_name: Test_Database
+    ports:
+      - "3360:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: mydatabase
+      MYSQL_ROOT_HOST: "%"
+    volumes:
+      - /home/docker/database/full_backup.sql:/docker-entrypoint-initdb.d/full_backup.sql:rw
+      - /home/docker/database/db_data:/var/lib/mysql
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:
+    driver: bridge

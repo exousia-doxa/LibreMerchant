@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+	<!-- Load scripts in this exact order -->
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Merchandiser</title>
+	<style>
+		* {
+			box-sizing: border-box;
+		}
+		body {
+			font-family: Arial;
+			background-color: white;
+			display: flex;
+			flex-direction: row;
+			height: 100vh;
+			margin: 0;
+			overflow: hidden;
+		}
+
+		/* Grouping common declarations (only for those with identical background, border, and border-radius values) */
+		.sidebar,
+		.sidebar-header,
+		.sidebar-content a,
+		.content:target,
+		:root:not(:has(:target)) .default,
+		.content-body {
+			background-color: whitesmoke;
+			border: 2px solid forestgreen;
+			border-radius: 10px;
+		}
+
+		.sidebar {
+			flex: 0 0 210px;
+			display: flex;
+			flex-direction: column;
+			margin: 10px;
+			padding: 10px;
+			transition: all 0.3s ease;
+		}
+		.sidebar.hidden {
+			display: none;
+		}
+		.sidebar-header {
+			padding: 10px;
+			background-color: forestgreen;
+			height: 50px;
+			margin-bottom: 10px;
+			/* border-radius already applied in grouping is omitted here intentionally */
+		}
+		.sidebar-content {
+			flex: 1;
+			overflow-y: auto;
+			scrollbar-width: none;
+			/* border-radius already applied in grouping */
+		}
+		.sidebar-header a {
+			display: flex;
+			align-items: center;
+			font-size: 20px;
+			height: 30px;
+			text-decoration: none;
+			color: whitesmoke;
+		}
+		.sidebar-content a {
+			display: flex;
+			align-items: center;
+			font-size: 20px;
+			text-decoration: none;
+			padding: 10px;
+			margin-bottom: 5px;
+			/* background-color, border, border-radius already applied via grouping */
+			color: forestgreen;
+			height: 40px;
+		}
+		.content:target,
+		:root:not(:has(:target)) .default {
+			display: flex;
+			flex-direction: column;
+			flex: 1;
+			margin: 10px;
+			padding: 10px;
+			/* background-color, border, border-radius already applied via grouping */
+		}
+		.content-header {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			height: 50px;
+			font-size: 16px;
+			padding: 10px;
+			background-color: forestgreen;
+			color: whitesmoke;
+			cursor: pointer;
+			/* border-radius not grouped because its background differs */
+			border-radius: 10px;
+		}
+		.content-body {
+			flex: 1;
+			padding: 10px;
+			margin-top: 10px;
+			overflow-y: auto;
+			scrollbar-width: var(10px);
+			scrollbar-color: forestgreen whitesmoke;
+			/* background-color, border, border-radius already applied via grouping */
+		}
+		.content {
+			display: none;
+			transition: all 0.3s ease;
+		}
+		@media (max-width: 768px) {
+			body {
+			}
+			.sidebar {
+				flex: 1 0 200px;
+				display: flex;
+				flex-direction: column;
+				overflow-y: auto;
+				margin: 0;
+			}
+			.content:target,
+			:root:not(:has(:target)) .default {
+				display: none;
+			}
+			.sidebar.stretched {
+				display: flex;
+				flex-direction: column;
+			}
+			.content.stretched {
+				display: flex;
+				margin: 0;
+			}
+			.sidebar-content {
+				flex: 1;
+				overflow-y: auto;
+				scrollbar-width: none;
+				display: flex;
+				flex-direction: column;
+			}
+			.content-body {
+				flex: 1;
+				overflow-y: auto;
+				scrollbar-width: var(10px);
+				scrollbar-color: forestgreen whitesmoke;
+			}
+		}
+	</style>
+</head>
+<body>
+	<div class="sidebar" id="sidebar">
+		<div class="sidebar-header">
+			<a href="main.html">MAIN MENU</a>
+		</div>
+		<div class="sidebar-content">
+			<a href="#about" class="menu-item">ABOUT</a>
+			<a href="#good_page" class="menu-item">GOOD</a>
+			<a href="#group_page" class="menu-item">GROUP</a>
+			<a href="#create-organisation" class="menu-item">CREATE ORG</a>
+			<a href="#show-organisation" class="menu-item">SHOW ORG</a>
+			<a href="#show-receipt" class="menu-item">SHOW RECEIPT</a>
+		</div>
+	</div>
+
+	<div class="content default" id="default">
+		<div class="content-header header-toggle">
+			<h1>Merchandiser</h1>
+		</div>
+		<div class="content-body">
+			<p>This is the merchandiser section.</p>
+		</div>
+	</div>
+
+	<div id="good_page" class="content">
+		<div class="content-header header-toggle">
+			<h1>Good</h1>
+		</div>
+		<div class="content-body">
+            {% include './merchandiser/good/good.html' %}
+		</div>
+	</div>
+
+	<div id="group_page" class="content">
+		<div class="content-header header-toggle">
+			<h1>Group</h1>
+		</div>
+		<div class="content-body">
+            {% include './merchandiser/group/group.html' %}
+		</div>
+	</div>
+
+	<div id="create-organisation" class="content">
+		<div class="content-header header-toggle">
+			<h1>Organisation - Create</h1>
+		</div>
+		<div class="content-body">
+            {% include './merchandiser/organisation/create_organisation.html' %}
+		</div>
+	</div>
+
+	<div id="show-organisation" class="content">
+		<div class="content-header header-toggle">
+			<h1>Organisation - Show</h1>
+		</div>
+		<div class="content-body">
+            {% include './merchandiser/organisation/show_organisation.html' %}
+		</div>
+	</div>
+
+	<div id="show-receipt" class="content">
+		<div class="content-header header-toggle">
+			<h1>Organisation - Show</h1>
+		</div>
+		<div class="content-body">
+            {% include './merchandiser/receipt/show_receipt.html' %}
+		</div>
+	</div>
+
+	<div id="about" class="content">
+		<div class="content-header header-toggle">
+			<h1>About</h1>
+		</div>
+		<div class="content-body">
+			<p>This is the about section.</p>
+		</div>
+	</div>
+
+	<script>
+		const sidebar = document.getElementById('sidebar');
+		const menuItems = document.querySelectorAll('.menu-item');
+		const headers = document.querySelectorAll('.header-toggle');
+		const allContents = document.querySelectorAll('.content');
+
+		headers.forEach(header => {
+			header.addEventListener('click', () => {
+				if (window.innerWidth <= 768) {
+					const content = header.closest('.content');
+					content.classList.remove('stretched');
+					sidebar.classList.remove('hidden');
+				} else {
+					sidebar.classList.toggle('hidden');
+				}
+			});
+		});
+
+		menuItems.forEach(item => {
+			item.addEventListener('click', () => {
+				if (window.innerWidth <= 768) {
+					sidebar.classList.add('hidden');
+					setTimeout(() => {
+						const targetContent = document.querySelector(location.hash);
+						targetContent?.classList.add('stretched');
+					}, 100);
+				} else {
+					sidebar.classList.remove('hidden');
+					document.querySelectorAll('.content').forEach(c => c.classList.remove('stretched'));
+				}
+			});
+		});
+
+		window.addEventListener('resize', () => {
+			if (window.innerWidth > 768) {
+				sidebar.classList.remove('hidden');
+				document.querySelectorAll('.content').forEach(c => c.classList.remove('stretched'));
+			}
+		});
+
+		// Dispatch 'content-displayed' event on hash change
+function handleHashChange() {
+  const contentId = window.location.hash.substring(1) || 'default';
+  const event = new CustomEvent('content-displayed', { detail: contentId });
+  window.dispatchEvent(event);
+}
+
+window.addEventListener('hashchange', handleHashChange);
+handleHashChange(); // Trigger for initial load
+	</script>
+</body>
+</html>

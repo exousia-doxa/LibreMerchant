@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authorization</title>
+    <style>
+        /* General styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        /* Form styles */
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        select {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        input[type="submit"],
+        button.btn {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            background: #28a745;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        input[type="submit"]:hover,
+        button.btn:hover {
+            background: #218838;
+        }
+
+        /* Dropdown menu styles */
+        select {
+            appearance: none;
+            background: #fff url('../static/dropdown-arrow.png') no-repeat right 10px center;
+            background-size: 12px;
+            padding-right: 30px;
+        }
+
+        button.btn + button.btn {
+            margin-top: 10px;
+        }
+
+        select:focus {
+            border-color: #28a745;
+            outline: none;
+        }
+
+        /* Error message styles */
+        .error {
+            background: #ffcccc;
+            color: #cc0000;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+
+        /* Popup styles */
+        .popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .popup-content {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            width: 300px;
+            text-align: left;
+        }
+
+        .close-btn {
+            float: right;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        /* Progress bar styles */
+        #login-progress {
+            margin-top: 15px;
+            height: 16px;
+            border-radius: 10px;
+            width: 100%;
+            appearance: none;
+        }
+
+        #login-progress::-webkit-progress-bar {
+            background-color: #eee;
+            border-radius: 10px;
+        }
+
+        #login-progress::-webkit-progress-value {
+            background-color: #28a745;
+            border-radius: 10px;
+        }
+
+        #login-progress::-moz-progress-bar {
+            background-color: #28a745;
+        }
+
+        /* Dialog styles */
+        dialog#login-dialog {
+            border: none;
+            border-radius: 15px;
+            padding: 20px;
+            width: 300px;
+            max-width: 90%;
+            background: #fff;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.25);
+            text-align: center;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        dialog#login-dialog::backdrop {
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        #dialog-message {
+            margin-bottom: 15px;
+            color: #333;
+            font-size: 14px;
+        }
+
+        #close-dialog {
+            background-color: #dc3545;
+            color: #fff;
+            padding: 8px 14px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s ease;
+        }
+
+        #close-dialog:hover {
+            background-color: #c82333;
+        }
+
+        /* Fade-in animation for dialog */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Authorization</h2>
+
+    {% if error_message %}
+        <div class="error">
+            <p>{{ error_message }}</p>
+        </div>
+    {% endif %}
+
+    <form id="auth" action="/login" method="post">
+        <div class="form-group">
+            <label for="user-login">Login</label>
+            <input type="text" id="user-login" name="user-login" required>
+        </div>
+        <div class="form-group">
+            <label for="user-password">Password</label>
+            <input type="password" id="user-password" name="user-password" required>
+        </div>
+        <div class="form-group">
+            <label for="db-select">Select Database</label>
+            <select id="db-select" name="db-select">
+                <option value="">Select a database</option>
+                <option value="setup-db">Setup Database</option>
+            </select>
+        </div>
+        <input type="submit" value="Login" class="btn" id="login-btn">
+    </form>
+
+    <progress id="login-progress" style="display: none; width: 100%;"></progress>
+
+    <dialog id="login-dialog">
+        <p id="dialog-message"></p>
+        <button id="close-dialog">Close</button>
+    </dialog>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const dialog = document.getElementById("login-dialog");
+    const dialogMsg = document.getElementById("dialog-message");
+    const closeDialog = document.getElementById("close-dialog");
+    const progress = document.getElementById("login-progress");
+
+    closeDialog.addEventListener("click", () => dialog.close());
+
+    if (document.getElementById("db-select")) {
+        loadDatabases();
+
+        document.getElementById("db-select").addEventListener("change", function(event) {
+            const selectedDb = event.target.value;
+
+            if (selectedDb === "setup-db") {
+                window.location.href = "/setup_db.html";
+                return;
+            }
+
+            if (selectedDb) {
+                const databases = getDatabasesFromCookies();
+                const db = databases.find(db => db.name === selectedDb);
+                if (db) {
+                    document.getElementById("db-url").value = db.url;
+                    document.getElementById("db-login").value = db.login;
+                    document.getElementById("db-password").value = db.password;
+                }
+            } else {
+                clearFields();
+            }
+        });
+    }
+
+    document.getElementById("login-btn").addEventListener("click", function(event) {
+        event.preventDefault();
+        progress.style.display = "block";
+
+        const selectedDb = document.getElementById("db-select").value;
+        const databases = getDatabasesFromCookies();
+        const db = databases.find(db => db.name === selectedDb) || {};
+
+        const data = {
+            "user-login": document.getElementById("user-login").value,
+            "user-password": document.getElementById("user-password").value,
+            "db-name": selectedDb,
+            "db-url": db.url || "",
+            "db-login": db.login || "",
+            "db-password": db.password || ""
+        };
+
+        fetch("/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            progress.style.display = "none";
+            if (data.success) {
+                window.location.href = data.redirect;
+            } else {
+                dialogMsg.textContent = "Login failed: " + data.message;
+                dialog.showModal();
+            }
+        })
+        .catch(error => {
+            progress.style.display = "none";
+            dialogMsg.textContent = "Error: " + error;
+            dialog.showModal();
+        });
+    });
+});
+
+function loadDatabases() {
+    const dbSelect = document.getElementById("db-select");
+    dbSelect.innerHTML = '';
+
+    const defaultOption = document.createElement("option");
+    defaultOption.value = "";
+    defaultOption.textContent = "Select a database";
+    dbSelect.appendChild(defaultOption);
+
+    const databases = getDatabasesFromCookies();
+    databases.forEach(db => {
+        const option = document.createElement("option");
+        option.value = db.name;
+        option.textContent = db.name;
+        dbSelect.appendChild(option);
+    });
+
+    const setupOption = document.createElement("option");
+    setupOption.value = "setup-db";
+    setupOption.textContent = "Setup Database";
+    dbSelect.appendChild(setupOption);
+}
+
+function getDatabasesFromCookies() {
+    const cookies = document.cookie.split("; ");
+    const dbCookie = cookies.find(cookie => cookie.startsWith("databases="));
+    if (dbCookie) {
+        return JSON.parse(decodeURIComponent(dbCookie.split("=")[1]));
+    }
+    return [];
+}
+
+function clearFields() {
+    if (document.getElementById("db-url")) document.getElementById("db-url").value = "";
+    if (document.getElementById("db-login")) document.getElementById("db-login").value = "";
+    if (document.getElementById("db-password")) document.getElementById("db-password").value = "";
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,68 @@
+:root {
+	--primary: #2B8A3E;
+	--primary-light: #40C057;
+	--primary-dark: #186429;
+	--secondary: #F8F9FA;
+	--text: #343A40;
+	--border: #DEE2E6;
+	--hover-bg: #E9ECEF;
+	--radius: 4px;
+	--shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+html, body {
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+	font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+.form-container {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	background: var(--secondary);
+	gap: 2px;
+}
+
+.resizable-block {
+	background: white;
+	overflow: auto;
+	position: relative;
+	min-height: 0;
+	box-shadow: var(--shadow);
+}
+
+#form-block {
+	flex: 1 1 40%;
+}
+
+#table-block {
+	flex: 1 1 60%;
+}
+
+.resize-handle {
+	height: 8px;
+	background: var(--border);
+	cursor: row-resize;
+	position: relative;
+	transition: background 0.2s;
+	flex: 0 0 10px;
+}
+
+.resize-handle:hover {
+	background: var(--primary-light);
+}
+
+.resize-handle::after {
+	content: "";
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	width: 40px;
+	height: 3px;
+	background: var(--primary);
+	border-radius: 2px;
+}
